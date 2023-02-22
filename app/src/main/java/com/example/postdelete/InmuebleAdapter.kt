@@ -15,14 +15,27 @@ class InmuebleAdapter(private var inmuebles:MutableList<InmuebleResponse>): Recy
     }
 
     override fun getItemCount(): Int {
-        return fInmuebles.size
+        return inmuebles.size
     }
 
     override fun onBindViewHolder(holder: InmuebleViewHolder, position: Int) {
-        val itemT = fInmuebles[position]
-        holder.bind(itemT.titulo)
-        val inmuebleApiService = APIService.retrofit.create(APIService::class.java)
+        val inmueble = inmuebles[position]
+        holder.bind(inmueble, this)
+    }
 
+    fun removeInmueble(inmueble: InmuebleResponse) {
+        val position = inmuebles.indexOf(inmueble)
+        if (position != -1) {
+            inmuebles.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
+    fun updateInmueble(oldInmueble: InmuebleResponse, newInmueble: InmuebleResponse) {
+        val index = inmuebles.indexOf(oldInmueble)
+        if (index != -1) {
+            inmuebles[index] = newInmueble
+            notifyItemChanged(index)
+        }
     }
 
 }

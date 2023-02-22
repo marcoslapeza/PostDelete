@@ -6,9 +6,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.postdelete.databinding.ActivityMainBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -19,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
     lateinit var adapter: InmuebleAdapter
-    val imueblesTitulos = mutableListOf<String>()
+    val imuebles = mutableListOf<InmuebleResponse>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -33,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun initRecyclerView(){
-        adapter=InmuebleAdapter(mutableListOf())
+        adapter=InmuebleAdapter(imuebles)
         binding.rvInmuebles.layoutManager = LinearLayoutManager(this)
         binding.rvInmuebles.adapter=adapter
     }
@@ -41,12 +38,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun getRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://192.168.1.141:8080/api/")
+            .baseUrl("http://192.168.59.113:8080/api/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
     private fun anadir(){
-        val inmueble = InmuebleResponse("piso por defecto", 1000.0f, "Descripción", 80L, 70L, "Ubicación", "Zona", "2022-01-01", 3L, 2L, -1)
+        val inmueble = InmuebleResponse("piso por defecto", 1000.0f, "Descripción", 80L, 70.0, "Ubicación", "Zona", "2022-01-01", 3L, 2L, -1)
         Log.d("ANADIR", inmueble.toString()) // Agregamos un log para verificar el objeto
         val call = getRetrofit().create(APIService::class.java).altaInmueble(inmueble)
         call.enqueue(object : Callback<InmuebleResponse> {
@@ -76,9 +73,11 @@ class MainActivity : AppCompatActivity() {
                 response: Response<List<InmuebleResponse>>
             ) {
                 if (response.isSuccessful) {
-                    val inmuebles: List<String> = response.body()?.map { it.titulo } ?: emptyList()
-                    imueblesTitulos.clear()
-                    imueblesTitulos.addAll(inmuebles)
+                    val inmueblesI: List<InmuebleResponse>? = response.body()
+                    imuebles.clear()
+                    if (inmueblesI != null) {
+                        imuebles.addAll(inmueblesI)
+                    }
                     adapter.notifyDataSetChanged()
                 } else {
 

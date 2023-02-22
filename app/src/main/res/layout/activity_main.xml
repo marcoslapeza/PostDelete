@@ -35,7 +35,7 @@
         android:id="@+id/anadir"
         android:layout_width="151dp"
         android:layout_height="51dp"
-        android:text="Button"
+        android:text="añadir"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.103"
